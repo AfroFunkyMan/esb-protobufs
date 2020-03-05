@@ -9,6 +9,10 @@ export namespace feedbacks {
         public store(request: feedbacks.IRequestStore): Promise<feedbacks.ResponseOk>;
         public order(request: feedbacks.IRequestOrder, callback: feedbacks.Mobile.OrderCallback): void;
         public order(request: feedbacks.IRequestOrder): Promise<feedbacks.ResponseOk>;
+        public categories(request: google.protobuf.IEmpty, callback: feedbacks.Mobile.CategoriesCallback): void;
+        public categories(request: google.protobuf.IEmpty): Promise<feedbacks.ResponseCategories>;
+        public choices(request: feedbacks.IRequestChoices, callback: feedbacks.Mobile.ChoicesCallback): void;
+        public choices(request: feedbacks.IRequestChoices): Promise<feedbacks.ResponseChoices>;
     }
 
     namespace Mobile {
@@ -18,6 +22,10 @@ export namespace feedbacks {
         type StoreCallback = (error: (Error|null), response?: feedbacks.ResponseOk) => void;
 
         type OrderCallback = (error: (Error|null), response?: feedbacks.ResponseOk) => void;
+
+        type CategoriesCallback = (error: (Error|null), response?: feedbacks.ResponseCategories) => void;
+
+        type ChoicesCallback = (error: (Error|null), response?: feedbacks.ResponseChoices) => void;
     }
 
     interface IResponseOk {
@@ -27,10 +35,6 @@ export namespace feedbacks {
     class ResponseOk implements IResponseOk {
         constructor(properties?: feedbacks.IResponseOk);
         public ok: boolean;
-        public static encode(message: feedbacks.IResponseOk, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: feedbacks.IResponseOk, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): feedbacks.ResponseOk;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): feedbacks.ResponseOk;
     }
 
     interface IRequestApp {
@@ -50,10 +54,6 @@ export namespace feedbacks {
         public reason: number[];
         public comment: string;
         public date: string;
-        public static encode(message: feedbacks.IRequestApp, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: feedbacks.IRequestApp, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): feedbacks.RequestApp;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): feedbacks.RequestApp;
     }
 
     interface IRequestStore {
@@ -73,10 +73,6 @@ export namespace feedbacks {
         public comment: string;
         public city: string;
         public date: string;
-        public static encode(message: feedbacks.IRequestStore, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: feedbacks.IRequestStore, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): feedbacks.RequestStore;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): feedbacks.RequestStore;
     }
 
     interface IRequestOrder {
@@ -110,10 +106,111 @@ export namespace feedbacks {
         public transport_company: string;
         public country: string;
         public city: string;
-        public static encode(message: feedbacks.IRequestOrder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: feedbacks.IRequestOrder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): feedbacks.RequestOrder;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): feedbacks.RequestOrder;
+    }
+
+    interface IChoice {
+        id?: (number|null);
+        title?: (string|null);
+        category_id?: (number|null);
+    }
+
+    class Choice implements IChoice {
+        constructor(properties?: feedbacks.IChoice);
+        public id: number;
+        public title: string;
+        public category_id: number;
+    }
+
+    interface ICategory {
+        id?: (number|null);
+        title?: (string|null);
+    }
+
+    class Category implements ICategory {
+        constructor(properties?: feedbacks.ICategory);
+        public id: number;
+        public title: string;
+    }
+
+    interface IRequestChoices {
+        category_id?: (number|null);
+    }
+
+    class RequestChoices implements IRequestChoices {
+        constructor(properties?: feedbacks.IRequestChoices);
+        public category_id: number;
+    }
+
+    interface IResponseChoices {
+        result?: (feedbacks.IChoice[]|null);
+    }
+
+    class ResponseChoices implements IResponseChoices {
+        constructor(properties?: feedbacks.IResponseChoices);
+        public result: feedbacks.IChoice[];
+    }
+
+    interface IResponseCategories {
+        result?: (feedbacks.ICategory[]|null);
+    }
+
+    class ResponseCategories implements IResponseCategories {
+        constructor(properties?: feedbacks.IResponseCategories);
+        public result: feedbacks.ICategory[];
+    }
+}
+
+export namespace google {
+
+    namespace protobuf {
+
+        interface IEmpty {
+        }
+
+        class Empty implements IEmpty {
+            constructor(properties?: google.protobuf.IEmpty);
+        }
+    }
+}
+
+export namespace health {
+
+    class Health extends $protobuf.rpc.Service {
+        constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+        public check(request: health.IHealthCheckRequest, callback: health.Health.CheckCallback): void;
+        public check(request: health.IHealthCheckRequest): Promise<health.HealthCheckResponse>;
+    }
+
+    namespace Health {
+
+        type CheckCallback = (error: (Error|null), response?: health.HealthCheckResponse) => void;
+    }
+
+    interface IHealthCheckRequest {
+        service?: (string|null);
+    }
+
+    class HealthCheckRequest implements IHealthCheckRequest {
+        constructor(properties?: health.IHealthCheckRequest);
+        public service: string;
+    }
+
+    interface IHealthCheckResponse {
+        status?: (health.HealthCheckResponse.ServingStatus|null);
+    }
+
+    class HealthCheckResponse implements IHealthCheckResponse {
+        constructor(properties?: health.IHealthCheckResponse);
+        public status: health.HealthCheckResponse.ServingStatus;
+    }
+
+    namespace HealthCheckResponse {
+
+        enum ServingStatus {
+            UNKNOWN = 0,
+            SERVING = 1,
+            NOT_SERVING = 2
+        }
     }
 }
 
@@ -157,10 +254,6 @@ export namespace logistics {
     class PingResponse implements IPingResponse {
         constructor(properties?: logistics.IPingResponse);
         public response: string;
-        public static encode(message: logistics.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.PingResponse;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.PingResponse;
     }
 
     interface IGetParamsUPS {
@@ -180,10 +273,6 @@ export namespace logistics {
         public destinationPostalCode: string;
         public shipDate: string;
         public shipTime: string;
-        public static encode(message: logistics.IGetParamsUPS, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetParamsUPS, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetParamsUPS;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetParamsUPS;
     }
 
     interface IGetResponseUPS {
@@ -195,10 +284,6 @@ export namespace logistics {
         constructor(properties?: logistics.IGetResponseUPS);
         public deliveryDate: string;
         public deliveryTime: string;
-        public static encode(message: logistics.IGetResponseUPS, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetResponseUPS, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetResponseUPS;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetResponseUPS;
     }
 
     interface IGetParamsBoxberry {
@@ -210,10 +295,6 @@ export namespace logistics {
         constructor(properties?: logistics.IGetParamsBoxberry);
         public originCode: string;
         public destionationCode: string;
-        public static encode(message: logistics.IGetParamsBoxberry, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetParamsBoxberry, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetParamsBoxberry;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetParamsBoxberry;
     }
 
     interface IGetResponseBoxberry {
@@ -225,10 +306,6 @@ export namespace logistics {
         constructor(properties?: logistics.IGetResponseBoxberry);
         public price: number;
         public deliveryPeriod: number;
-        public static encode(message: logistics.IGetResponseBoxberry, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetResponseBoxberry, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetResponseBoxberry;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetResponseBoxberry;
     }
 
     interface IGetParamsBoxberryDurationByCity {
@@ -240,10 +317,6 @@ export namespace logistics {
         constructor(properties?: logistics.IGetParamsBoxberryDurationByCity);
         public originCode: string;
         public cityName: string;
-        public static encode(message: logistics.IGetParamsBoxberryDurationByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetParamsBoxberryDurationByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetParamsBoxberryDurationByCity;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetParamsBoxberryDurationByCity;
     }
 
     interface IGetResponseBoxberryDurationByCity {
@@ -255,10 +328,6 @@ export namespace logistics {
         constructor(properties?: logistics.IGetResponseBoxberryDurationByCity);
         public price: number;
         public deliveryPeriod: number;
-        public static encode(message: logistics.IGetResponseBoxberryDurationByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetResponseBoxberryDurationByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetResponseBoxberryDurationByCity;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetResponseBoxberryDurationByCity;
     }
 
     interface IGetParamsPointInformation {
@@ -268,10 +337,6 @@ export namespace logistics {
     class GetParamsPointInformation implements IGetParamsPointInformation {
         constructor(properties?: logistics.IGetParamsPointInformation);
         public point_code: string;
-        public static encode(message: logistics.IGetParamsPointInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetParamsPointInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetParamsPointInformation;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetParamsPointInformation;
     }
 
     interface IGetResponsePointInformation {
@@ -285,10 +350,6 @@ export namespace logistics {
         public work_schedule: string;
         public address: string;
         public metro: string;
-        public static encode(message: logistics.IGetResponsePointInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetResponsePointInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetResponsePointInformation;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetResponsePointInformation;
     }
 
     interface IGetParamsOrderStatus {
@@ -298,10 +359,6 @@ export namespace logistics {
     class GetParamsOrderStatus implements IGetParamsOrderStatus {
         constructor(properties?: logistics.IGetParamsOrderStatus);
         public order_id: string;
-        public static encode(message: logistics.IGetParamsOrderStatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetParamsOrderStatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetParamsOrderStatus;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetParamsOrderStatus;
     }
 
     interface IGetResponseOrderStatus {
@@ -311,10 +368,6 @@ export namespace logistics {
     class GetResponseOrderStatus implements IGetResponseOrderStatus {
         constructor(properties?: logistics.IGetResponseOrderStatus);
         public statuses: logistics.Istatus[];
-        public static encode(message: logistics.IGetResponseOrderStatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.IGetResponseOrderStatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.GetResponseOrderStatus;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.GetResponseOrderStatus;
     }
 
     interface Istatus {
@@ -328,331 +381,284 @@ export namespace logistics {
         public date: string;
         public name: string;
         public comment: string;
-        public static encode(message: logistics.Istatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: logistics.Istatus, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): logistics.status;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): logistics.status;
     }
 }
 
-export namespace google {
-
-    namespace protobuf {
-
-        interface IEmpty {
-        }
-
-        class Empty implements IEmpty {
-            constructor(properties?: google.protobuf.IEmpty);
-            public static encode(message: google.protobuf.IEmpty, writer?: $protobuf.Writer): $protobuf.Writer;
-            public static encodeDelimited(message: google.protobuf.IEmpty, writer?: $protobuf.Writer): $protobuf.Writer;
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Empty;
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Empty;
-        }
-    }
+export class Mobile extends $protobuf.rpc.Service {
+    constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+    public contacts(request: google.protobuf.IEmpty, callback: Mobile.ContactsCallback): void;
+    public contacts(request: google.protobuf.IEmpty): Promise<ResponseMobileAPIContacts>;
+    public about(request: google.protobuf.IEmpty, callback: Mobile.AboutCallback): void;
+    public about(request: google.protobuf.IEmpty): Promise<ResponseMobileApiAbout>;
+    public faq(request: google.protobuf.IEmpty, callback: Mobile.FaqCallback): void;
+    public faq(request: google.protobuf.IEmpty): Promise<ResponseFaq>;
+    public countries(request: IParamsCountries, callback: Mobile.CountriesCallback): void;
+    public countries(request: IParamsCountries): Promise<ResponseCountries>;
 }
 
-export namespace meta {
+export namespace Mobile {
 
-    class Mobile extends $protobuf.rpc.Service {
-        constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
-        public contacts(request: google.protobuf.IEmpty, callback: meta.Mobile.ContactsCallback): void;
-        public contacts(request: google.protobuf.IEmpty): Promise<meta.ResponseMobileAPIContacts>;
-        public about(request: google.protobuf.IEmpty, callback: meta.Mobile.AboutCallback): void;
-        public about(request: google.protobuf.IEmpty): Promise<meta.ResponseMobileApiAbout>;
-        public faq(request: google.protobuf.IEmpty, callback: meta.Mobile.FaqCallback): void;
-        public faq(request: google.protobuf.IEmpty): Promise<meta.ResponseFaq>;
-    }
+    type ContactsCallback = (error: (Error|null), response?: ResponseMobileAPIContacts) => void;
 
-    namespace Mobile {
+    type AboutCallback = (error: (Error|null), response?: ResponseMobileApiAbout) => void;
 
-        type ContactsCallback = (error: (Error|null), response?: meta.ResponseMobileAPIContacts) => void;
+    type FaqCallback = (error: (Error|null), response?: ResponseFaq) => void;
 
-        type AboutCallback = (error: (Error|null), response?: meta.ResponseMobileApiAbout) => void;
+    type CountriesCallback = (error: (Error|null), response?: ResponseCountries) => void;
+}
 
-        type FaqCallback = (error: (Error|null), response?: meta.ResponseFaq) => void;
-    }
+export class Stores extends $protobuf.rpc.Service {
+    constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+    public all(request: google.protobuf.IEmpty, callback: Stores.AllCallback): void;
+    public all(request: google.protobuf.IEmpty): Promise<ResponseAllOfflineStoresInfo>;
+    public byID(request: IparamsOfflineStoreInfoByID, callback: Stores.ByIDCallback): void;
+    public byID(request: IparamsOfflineStoreInfoByID): Promise<ResponseOfflineStoreInfoByID>;
+    public cities(request: IparamsStoresCities, callback: Stores.CitiesCallback): void;
+    public cities(request: IparamsStoresCities): Promise<ResponseStoresCities>;
+    public byCity(request: IparamsStoresByCity, callback: Stores.ByCityCallback): void;
+    public byCity(request: IparamsStoresByCity): Promise<responseStoresByCity>;
+}
 
-    class Stores extends $protobuf.rpc.Service {
-        constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
-        public all(request: google.protobuf.IEmpty, callback: meta.Stores.AllCallback): void;
-        public all(request: google.protobuf.IEmpty): Promise<meta.ResponseAllOfflineStoresInfo>;
-        public byID(request: meta.IparamsOfflineStoreInfoByID, callback: meta.Stores.ByIDCallback): void;
-        public byID(request: meta.IparamsOfflineStoreInfoByID): Promise<meta.ResponseOfflineStoreInfoByID>;
-        public cities(request: meta.IparamsStoresCities, callback: meta.Stores.CitiesCallback): void;
-        public cities(request: meta.IparamsStoresCities): Promise<meta.ResponseStoresCities>;
-        public byCity(request: meta.IparamsStoresByCity, callback: meta.Stores.ByCityCallback): void;
-        public byCity(request: meta.IparamsStoresByCity): Promise<meta.responseStoresByCity>;
-    }
+export namespace Stores {
 
-    namespace Stores {
+    type AllCallback = (error: (Error|null), response?: ResponseAllOfflineStoresInfo) => void;
 
-        type AllCallback = (error: (Error|null), response?: meta.ResponseAllOfflineStoresInfo) => void;
+    type ByIDCallback = (error: (Error|null), response?: ResponseOfflineStoreInfoByID) => void;
 
-        type ByIDCallback = (error: (Error|null), response?: meta.ResponseOfflineStoreInfoByID) => void;
+    type CitiesCallback = (error: (Error|null), response?: ResponseStoresCities) => void;
 
-        type CitiesCallback = (error: (Error|null), response?: meta.ResponseStoresCities) => void;
+    type ByCityCallback = (error: (Error|null), response?: responseStoresByCity) => void;
+}
 
-        type ByCityCallback = (error: (Error|null), response?: meta.responseStoresByCity) => void;
-    }
+export interface IResponseAllOfflineStoresInfo {
+    stores?: (IOfflineStore[]|null);
+}
 
-    interface IResponseAllOfflineStoresInfo {
-        stores?: (meta.IOfflineStore[]|null);
-    }
+export class ResponseAllOfflineStoresInfo implements IResponseAllOfflineStoresInfo {
+    constructor(properties?: IResponseAllOfflineStoresInfo);
+    public stores: IOfflineStore[];
+}
 
-    class ResponseAllOfflineStoresInfo implements IResponseAllOfflineStoresInfo {
-        constructor(properties?: meta.IResponseAllOfflineStoresInfo);
-        public stores: meta.IOfflineStore[];
-        public static encode(message: meta.IResponseAllOfflineStoresInfo, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseAllOfflineStoresInfo, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseAllOfflineStoresInfo;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseAllOfflineStoresInfo;
-    }
+export interface IOfflineStore {
+    store_id?: (number|null);
+    title?: (string|null);
+    address?: (string|null);
+    phone?: (string|null);
+    geo?: (string|null);
+    city?: (string|null);
+    country?: (string|null);
+    active?: (boolean|null);
+    picture_url?: (string|null);
+    schedule?: (string|null);
+    city_id?: (number|null);
+}
 
-    interface IOfflineStore {
-        store_id?: (number|null);
-        title?: (string|null);
-        address?: (string|null);
-        phone?: (string|null);
-        geo?: (string|null);
-        city?: (string|null);
-        country?: (string|null);
-        active?: (boolean|null);
-        picture_url?: (string|null);
-        schedule?: (string|null);
-        city_id?: (number|null);
-    }
+export class OfflineStore implements IOfflineStore {
+    constructor(properties?: IOfflineStore);
+    public store_id: number;
+    public title: string;
+    public address: string;
+    public phone: string;
+    public geo: string;
+    public city: string;
+    public country: string;
+    public active: boolean;
+    public picture_url: string;
+    public schedule: string;
+    public city_id: number;
+}
 
-    class OfflineStore implements IOfflineStore {
-        constructor(properties?: meta.IOfflineStore);
-        public store_id: number;
-        public title: string;
-        public address: string;
-        public phone: string;
-        public geo: string;
-        public city: string;
-        public country: string;
-        public active: boolean;
-        public picture_url: string;
-        public schedule: string;
-        public city_id: number;
-        public static encode(message: meta.IOfflineStore, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IOfflineStore, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.OfflineStore;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.OfflineStore;
-    }
+export interface IparamsOfflineStoreInfoByID {
+    store_id?: (number|null);
+}
 
-    interface IparamsOfflineStoreInfoByID {
-        store_id?: (number|null);
-    }
+export class paramsOfflineStoreInfoByID implements IparamsOfflineStoreInfoByID {
+    constructor(properties?: IparamsOfflineStoreInfoByID);
+    public store_id: number;
+}
 
-    class paramsOfflineStoreInfoByID implements IparamsOfflineStoreInfoByID {
-        constructor(properties?: meta.IparamsOfflineStoreInfoByID);
-        public store_id: number;
-        public static encode(message: meta.IparamsOfflineStoreInfoByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IparamsOfflineStoreInfoByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.paramsOfflineStoreInfoByID;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.paramsOfflineStoreInfoByID;
-    }
+export interface IResponseOfflineStoreInfoByID {
+    store?: (IOfflineStore|null);
+}
 
-    interface IResponseOfflineStoreInfoByID {
-        store?: (meta.IOfflineStore|null);
-    }
+export class ResponseOfflineStoreInfoByID implements IResponseOfflineStoreInfoByID {
+    constructor(properties?: IResponseOfflineStoreInfoByID);
+    public store?: (IOfflineStore|null);
+}
 
-    class ResponseOfflineStoreInfoByID implements IResponseOfflineStoreInfoByID {
-        constructor(properties?: meta.IResponseOfflineStoreInfoByID);
-        public store?: (meta.IOfflineStore|null);
-        public static encode(message: meta.IResponseOfflineStoreInfoByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseOfflineStoreInfoByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseOfflineStoreInfoByID;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseOfflineStoreInfoByID;
-    }
+export interface IResponseMobileAPIContacts {
+    contacts?: (IContact[]|null);
+}
 
-    interface IResponseMobileAPIContacts {
-        contacts?: (meta.IContact[]|null);
-    }
+export class ResponseMobileAPIContacts implements IResponseMobileAPIContacts {
+    constructor(properties?: IResponseMobileAPIContacts);
+    public contacts: IContact[];
+}
 
-    class ResponseMobileAPIContacts implements IResponseMobileAPIContacts {
-        constructor(properties?: meta.IResponseMobileAPIContacts);
-        public contacts: meta.IContact[];
-        public static encode(message: meta.IResponseMobileAPIContacts, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseMobileAPIContacts, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseMobileAPIContacts;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseMobileAPIContacts;
-    }
+export interface IContact {
+    title?: (string|null);
+    subtitle?: (string|null);
+    text?: (string|null);
+}
 
-    interface IContact {
-        title?: (string|null);
-        subtitle?: (string|null);
-        text?: (string|null);
-    }
+export class Contact implements IContact {
+    constructor(properties?: IContact);
+    public title: string;
+    public subtitle: string;
+    public text: string;
+}
 
-    class Contact implements IContact {
-        constructor(properties?: meta.IContact);
-        public title: string;
-        public subtitle: string;
-        public text: string;
-        public static encode(message: meta.IContact, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IContact, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.Contact;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.Contact;
-    }
+export interface IResponseMobileApiAbout {
+    about?: (string|null);
+    mission?: (string|null);
+    blocks?: (IBlock[]|null);
+    image_url?: (string|null);
+}
 
-    interface IResponseMobileApiAbout {
-        about?: (string|null);
-        mission?: (string|null);
-        blocks?: (meta.IBlock[]|null);
-        image_url?: (string|null);
-    }
+export class ResponseMobileApiAbout implements IResponseMobileApiAbout {
+    constructor(properties?: IResponseMobileApiAbout);
+    public about: string;
+    public mission: string;
+    public blocks: IBlock[];
+    public image_url: string;
+}
 
-    class ResponseMobileApiAbout implements IResponseMobileApiAbout {
-        constructor(properties?: meta.IResponseMobileApiAbout);
-        public about: string;
-        public mission: string;
-        public blocks: meta.IBlock[];
-        public image_url: string;
-        public static encode(message: meta.IResponseMobileApiAbout, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseMobileApiAbout, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseMobileApiAbout;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseMobileApiAbout;
-    }
+export interface IBlock {
+    title?: (string|null);
+    value?: (string|null);
+}
 
-    interface IBlock {
-        title?: (string|null);
-        value?: (string|null);
-    }
+export class Block implements IBlock {
+    constructor(properties?: IBlock);
+    public title: string;
+    public value: string;
+}
 
-    class Block implements IBlock {
-        constructor(properties?: meta.IBlock);
-        public title: string;
-        public value: string;
-        public static encode(message: meta.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.Block;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.Block;
-    }
+export interface IResponseFaq {
+    result?: (IBlockFaq[]|null);
+}
 
-    interface IResponseFaq {
-        result?: (meta.IBlockFaq[]|null);
-    }
+export class ResponseFaq implements IResponseFaq {
+    constructor(properties?: IResponseFaq);
+    public result: IBlockFaq[];
+}
 
-    class ResponseFaq implements IResponseFaq {
-        constructor(properties?: meta.IResponseFaq);
-        public result: meta.IBlockFaq[];
-        public static encode(message: meta.IResponseFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseFaq;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseFaq;
-    }
+export interface IBlockFaq {
+    title?: (string|null);
+    content?: (ITextFaq[]|null);
+}
 
-    interface IBlockFaq {
-        title?: (string|null);
-        context?: (meta.ITextFaq[]|null);
-    }
+export class BlockFaq implements IBlockFaq {
+    constructor(properties?: IBlockFaq);
+    public title: string;
+    public content: ITextFaq[];
+}
 
-    class BlockFaq implements IBlockFaq {
-        constructor(properties?: meta.IBlockFaq);
-        public title: string;
-        public context: meta.ITextFaq[];
-        public static encode(message: meta.IBlockFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IBlockFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.BlockFaq;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.BlockFaq;
-    }
+export interface ITextFaq {
+    title?: (string|null);
+    answer?: (string|null);
+}
 
-    interface ITextFaq {
-        title?: (string|null);
-        answer?: (string|null);
-    }
+export class TextFaq implements ITextFaq {
+    constructor(properties?: ITextFaq);
+    public title: string;
+    public answer: string;
+}
 
-    class TextFaq implements ITextFaq {
-        constructor(properties?: meta.ITextFaq);
-        public title: string;
-        public answer: string;
-        public static encode(message: meta.ITextFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.ITextFaq, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.TextFaq;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.TextFaq;
-    }
+export interface IparamsStoresCities {
+    offset?: (number|null);
+    limit?: (number|null);
+}
 
-    interface IparamsStoresCities {
-        offset?: (number|null);
-        limit?: (number|null);
-    }
+export class paramsStoresCities implements IparamsStoresCities {
+    constructor(properties?: IparamsStoresCities);
+    public offset: number;
+    public limit: number;
+}
 
-    class paramsStoresCities implements IparamsStoresCities {
-        constructor(properties?: meta.IparamsStoresCities);
-        public offset: number;
-        public limit: number;
-        public static encode(message: meta.IparamsStoresCities, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IparamsStoresCities, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.paramsStoresCities;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.paramsStoresCities;
-    }
+export interface ICity {
+    city_id?: (number|null);
+    title?: (string|null);
+}
 
-    interface ICity {
-        city_id?: (number|null);
-        title?: (string|null);
-    }
+export class City implements ICity {
+    constructor(properties?: ICity);
+    public city_id: number;
+    public title: string;
+}
 
-    class City implements ICity {
-        constructor(properties?: meta.ICity);
-        public city_id: number;
-        public title: string;
-        public static encode(message: meta.ICity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.ICity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.City;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.City;
-    }
+export interface IResponseStoresCities {
+    cities?: (ICity[]|null);
+}
 
-    interface IResponseStoresCities {
-        cities?: (meta.ICity[]|null);
-    }
+export class ResponseStoresCities implements IResponseStoresCities {
+    constructor(properties?: IResponseStoresCities);
+    public cities: ICity[];
+}
 
-    class ResponseStoresCities implements IResponseStoresCities {
-        constructor(properties?: meta.IResponseStoresCities);
-        public cities: meta.ICity[];
-        public static encode(message: meta.IResponseStoresCities, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IResponseStoresCities, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.ResponseStoresCities;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.ResponseStoresCities;
-    }
+export interface IparamsStoresByCity {
+    city_id?: (number|null);
+    offset?: (number|null);
+    limit?: (number|null);
+}
 
-    interface IparamsStoresByCity {
-        city_id?: (number|null);
-        offset?: (number|null);
-        limit?: (number|null);
-    }
+export class paramsStoresByCity implements IparamsStoresByCity {
+    constructor(properties?: IparamsStoresByCity);
+    public city_id: number;
+    public offset: number;
+    public limit: number;
+}
 
-    class paramsStoresByCity implements IparamsStoresByCity {
-        constructor(properties?: meta.IparamsStoresByCity);
-        public city_id: number;
-        public offset: number;
-        public limit: number;
-        public static encode(message: meta.IparamsStoresByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IparamsStoresByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.paramsStoresByCity;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.paramsStoresByCity;
-    }
+export interface IresponseStoresByCity {
+    city_id?: (number|null);
+    title?: (string|null);
+    total?: (number|null);
+    stores?: (IOfflineStore[]|null);
+}
 
-    interface IresponseStoresByCity {
-        city_id?: (number|null);
-        title?: (string|null);
-        total?: (number|null);
-        stores?: (meta.IOfflineStore[]|null);
-    }
+export class responseStoresByCity implements IresponseStoresByCity {
+    constructor(properties?: IresponseStoresByCity);
+    public city_id: number;
+    public title: string;
+    public total: number;
+    public stores: IOfflineStore[];
+}
 
-    class responseStoresByCity implements IresponseStoresByCity {
-        constructor(properties?: meta.IresponseStoresByCity);
-        public city_id: number;
-        public title: string;
-        public total: number;
-        public stores: meta.IOfflineStore[];
-        public static encode(message: meta.IresponseStoresByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: meta.IresponseStoresByCity, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): meta.responseStoresByCity;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): meta.responseStoresByCity;
-    }
+export interface IParamsCountries {
+    offset?: (number|null);
+    limit?: (number|null);
+}
+
+export class ParamsCountries implements IParamsCountries {
+    constructor(properties?: IParamsCountries);
+    public offset: number;
+    public limit: number;
+}
+
+export interface IResponseCountries {
+    total?: (number|null);
+    result?: (ICountry[]|null);
+}
+
+export class ResponseCountries implements IResponseCountries {
+    constructor(properties?: IResponseCountries);
+    public total: number;
+    public result: ICountry[];
+}
+
+export interface ICountry {
+    id?: (number|Long|null);
+    country_code?: (string|null);
+    prefix?: (string|null);
+    title_ru?: (string|null);
+}
+
+export class Country implements ICountry {
+    constructor(properties?: ICountry);
+    public id: (number|Long);
+    public country_code: string;
+    public prefix: string;
+    public title_ru: string;
 }
 
 export namespace mindbox {
@@ -683,23 +689,15 @@ export namespace mindbox {
     class PingResponse implements IPingResponse {
         constructor(properties?: mindbox.IPingResponse);
         public response: string;
-        public static encode(message: mindbox.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.PingResponse;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.PingResponse;
     }
 
     interface IParamsUserInformation {
-        client_id?: (number|null);
+        client_id?: (string|null);
     }
 
     class ParamsUserInformation implements IParamsUserInformation {
         constructor(properties?: mindbox.IParamsUserInformation);
-        public client_id: number;
-        public static encode(message: mindbox.IParamsUserInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.IParamsUserInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.ParamsUserInformation;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.ParamsUserInformation;
+        public client_id: string;
     }
 
     interface IResponseUserInformation {
@@ -723,23 +721,15 @@ export namespace mindbox {
         public bonus_available: number;
         public bonus_blocked: number;
         public total_paid_amount: number;
-        public static encode(message: mindbox.IResponseUserInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.IResponseUserInformation, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.ResponseUserInformation;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.ResponseUserInformation;
     }
 
     interface IParamsOrdersHistory {
-        client_id?: (number|null);
+        client_id?: (string|null);
     }
 
     class ParamsOrdersHistory implements IParamsOrdersHistory {
         constructor(properties?: mindbox.IParamsOrdersHistory);
-        public client_id: number;
-        public static encode(message: mindbox.IParamsOrdersHistory, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.IParamsOrdersHistory, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.ParamsOrdersHistory;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.ParamsOrdersHistory;
+        public client_id: string;
     }
 
     interface IResponseOrdersHistory {
@@ -751,10 +741,6 @@ export namespace mindbox {
         constructor(properties?: mindbox.IResponseOrdersHistory);
         public total_count: number;
         public orders: mindbox.Iorder[];
-        public static encode(message: mindbox.IResponseOrdersHistory, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.IResponseOrdersHistory, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.ResponseOrdersHistory;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.ResponseOrdersHistory;
     }
 
     interface Iorder {
@@ -776,10 +762,6 @@ export namespace mindbox {
         public payment_amount: number;
         public applied_discount: number;
         public acquired_balance_change: number;
-        public static encode(message: mindbox.Iorder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: mindbox.Iorder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): mindbox.order;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): mindbox.order;
     }
 }
 
@@ -811,10 +793,6 @@ export namespace orders {
     class PingResponse implements IPingResponse {
         constructor(properties?: orders.IPingResponse);
         public response: string;
-        public static encode(message: orders.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.PingResponse;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.PingResponse;
     }
 
     interface IParamsOfflineByClient {
@@ -824,10 +802,6 @@ export namespace orders {
     class ParamsOfflineByClient implements IParamsOfflineByClient {
         constructor(properties?: orders.IParamsOfflineByClient);
         public clientId: number;
-        public static encode(message: orders.IParamsOfflineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IParamsOfflineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.ParamsOfflineByClient;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.ParamsOfflineByClient;
     }
 
     interface IResponseOfflineByClient {
@@ -837,10 +811,6 @@ export namespace orders {
     class ResponseOfflineByClient implements IResponseOfflineByClient {
         constructor(properties?: orders.IResponseOfflineByClient);
         public orders: orders.IOfflineOrder[];
-        public static encode(message: orders.IResponseOfflineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IResponseOfflineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.ResponseOfflineByClient;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.ResponseOfflineByClient;
     }
 
     interface IParamsOnlineByClient {
@@ -850,10 +820,6 @@ export namespace orders {
     class ParamsOnlineByClient implements IParamsOnlineByClient {
         constructor(properties?: orders.IParamsOnlineByClient);
         public clientId: number;
-        public static encode(message: orders.IParamsOnlineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IParamsOnlineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.ParamsOnlineByClient;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.ParamsOnlineByClient;
     }
 
     interface IResponseOnlineByClient {
@@ -863,10 +829,6 @@ export namespace orders {
     class ResponseOnlineByClient implements IResponseOnlineByClient {
         constructor(properties?: orders.IResponseOnlineByClient);
         public order: number[];
-        public static encode(message: orders.IResponseOnlineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IResponseOnlineByClient, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.ResponseOnlineByClient;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.ResponseOnlineByClient;
     }
 
     interface IOfflineOrder {
@@ -920,10 +882,6 @@ export namespace orders {
         public source: string;
         public bonuses_wasted: number;
         public bonuses_accrued: number;
-        public static encode(message: orders.IOfflineOrder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: orders.IOfflineOrder, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): orders.OfflineOrder;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): orders.OfflineOrder;
     }
 }
 
@@ -959,10 +917,6 @@ export namespace payments {
     class PingResponse implements IPingResponse {
         constructor(properties?: payments.IPingResponse);
         public response: string;
-        public static encode(message: payments.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.PingResponse;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.PingResponse;
     }
 
     interface IParamsGetCardByUserID {
@@ -972,10 +926,6 @@ export namespace payments {
     class ParamsGetCardByUserID implements IParamsGetCardByUserID {
         constructor(properties?: payments.IParamsGetCardByUserID);
         public user_id: number;
-        public static encode(message: payments.IParamsGetCardByUserID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IParamsGetCardByUserID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.ParamsGetCardByUserID;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.ParamsGetCardByUserID;
     }
 
     interface IResponseGetCardByUserID {
@@ -987,10 +937,6 @@ export namespace payments {
         constructor(properties?: payments.IResponseGetCardByUserID);
         public total: number;
         public cards: payments.IUserCard[];
-        public static encode(message: payments.IResponseGetCardByUserID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IResponseGetCardByUserID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.ResponseGetCardByUserID;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.ResponseGetCardByUserID;
     }
 
     interface IResponseSuccess {
@@ -1000,10 +946,6 @@ export namespace payments {
     class ResponseSuccess implements IResponseSuccess {
         constructor(properties?: payments.IResponseSuccess);
         public ok: boolean;
-        public static encode(message: payments.IResponseSuccess, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IResponseSuccess, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.ResponseSuccess;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.ResponseSuccess;
     }
 
     interface IParamsDeleteCardByID {
@@ -1013,10 +955,6 @@ export namespace payments {
     class ParamsDeleteCardByID implements IParamsDeleteCardByID {
         constructor(properties?: payments.IParamsDeleteCardByID);
         public card_id: number;
-        public static encode(message: payments.IParamsDeleteCardByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IParamsDeleteCardByID, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.ParamsDeleteCardByID;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.ParamsDeleteCardByID;
     }
 
     interface IUserCard {
@@ -1040,9 +978,5 @@ export namespace payments {
         public exp_date: string;
         public active: boolean;
         public test: boolean;
-        public static encode(message: payments.IUserCard, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static encodeDelimited(message: payments.IUserCard, writer?: $protobuf.Writer): $protobuf.Writer;
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): payments.UserCard;
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): payments.UserCard;
     }
 }
